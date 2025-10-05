@@ -9,7 +9,6 @@ usuário
 --> métodos
 + setId(int): void (pensando na sessão futura)
 + getId(): int
-+ cadastro(): void
 + getTarefas(): List<Tarefas>
 + setTarefas(List<Tarefas>): void
 + getDiario(): List<Diario>
@@ -21,7 +20,7 @@ tarefa
 - descrição: String
 - dataInicio: LocalDate
 - dataFim: LocalDate
-- status: String (pendende ou concluída)
+- status: boolean (pendende ou concluída)
 --> métodos
 + getTitulo(): String
 + setTitulo(String): void
@@ -33,7 +32,7 @@ tarefa
 + setDataFim(LocalDate): void
 + getStatus(): String
 + setStatus(String): void
-+ concluirTarerfa(): void
++ concluirTarefa(): void
 + estaConcluida(): boolean
 
 diário
