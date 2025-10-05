@@ -1,0 +1,24 @@
+Diagrama de Classes - Serviços/Operações do Sistema
+
+
+LoginService
+- usuários: List<Usuario>
+--> métodos
++ login (nome: String, senha: String): Usuário
++ adicionarUsuario(u. Usuário): void
++ listarUsuarios(): List<Usuario>
+
+TarefaService
+- tarefas: List<Tarefa>
+--> métodos
++ adicionarTarefa(u: Usuário, t: Tarefa): void
++ removerTarefa(u: Usuário, t: Tarefa): void
++ listarTrefas(u: Usuário): List<Tarefa>
++ marcarConcluida(u: Usuário, t: Tarefa): void
+
+DiárioService
+- diarios: List<Diario>
+--> métodos
++ preencherDiario(u: Usuário, d: Diário): void
++ listarDiarios(u: Usuário): List<Diario>
+

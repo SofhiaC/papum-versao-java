@@ -1,0 +1,48 @@
+Diagrama de Classes
+
+usuário
+- id: int
+- nome: String
+- senha: String
+- tarefas: List<Tarefa> (ArrayList)
+- diário: List<diario> (ArrayList)
+--> métodos
++ setId(int): void (pensando na sessão futura)
++ getId(): int
++ cadastro(): void
++ getTarefas(): List<Tarefas>
++ setTarefas(List<Tarefas>): void
++ getDiario(): List<Diario>
++ setDiario(List<Diario>): void
++ toString(): String (frescura mas achei legal, lembra json)
+
+tarefa
+- titulo: String
+- descrição: String
+- dataInicio: LocalDate
+- dataFim: LocalDate
+- status: String (pendende ou concluída)
+--> métodos
++ getTitulo(): String
++ setTitulo(String): void
++ getDescricao(): String
++ setDescricao(String): void
++ getDataInicio(): LocalDate
++ setDataInicio(LocalDate): void
++ getDataFim(): LocalDate
++ setDataFim(LocalDate): void
++ getStatus(): String
++ setStatus(String): void
++ concluirTarerfa(): void
++ estaConcluida(): boolean
+
+diário
+- data: LocalData
+- respostas: List<String> (as respostas vão ser armazenadas em ArrayList)
+--> métodos
++ getData(): LocalDate
++ setData(LocalDate): void
++ getRespostas(): List<String>
++ setRespostas(List<String>): void
++ addResposta(String): void
++ toString(): String

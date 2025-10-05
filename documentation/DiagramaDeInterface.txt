@@ -1,0 +1,31 @@
+Diagrama de Classes - Interface JavaFX
+
+main
++ main(args: String[]): void
++ start(Stage): void
+
+LoginView
+- nomeField: TextField
+- senhaField: PasswordField
+- loginButton: Button
+--> métodos
++ mostrar(): void
++ setLoginAction(action: EventHandler): void
+
+TarefaView
+- table: TableView<Tarefa>
+- addButton: Button
+- removeButton: Button
+- concluirButton: Button
+--> métodos
++ mostrar(): void
++ atualizarTabela(): void
+
+DiarioView
+- perguntas: List<String>
+- respostasFields: List<TextField>
+- salvarButton: Button
+--> métodos
++ mostrar(): void
++ preencherDiario(): Diário
+
