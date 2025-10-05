@@ -57,15 +57,8 @@ public class LoginView extends Application{
         primaryStage.show();
     }
 
-    private void abrirMainView(Usuario usuario, Stage primaryStage){
-        Label bemVindo = new Label("Bem-vindo, " + usuario.getNome() + "!");
-        Button sairButton = new Button("Sair");
-        sairButton.setOnAction(e -> primaryStage.close());
-
-        VBox layout = new VBox(20, bemVindo, sairButton);
-        layout.setPadding(new Insets(20));
-
-        Scene mainScene = new Scene(layout, 400, 200);
-        primaryStage.setScene(mainScene);
+    private void abrirMainView(Usuario usuario, Stage primaryStage) {
+        primaryStage.close(); // fecha a tela de login
+        new MainView(usuario).start(new Stage()); // abre a tela principal
     }
 }
