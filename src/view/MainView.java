@@ -18,10 +18,16 @@ public class MainView {
 
     public void start(Stage stage) {
         Button btnTarefas = new Button("Minhas Tarefas");
-        btnTarefas.setOnAction(e -> new TarefaView(usuario).start(new Stage()));
+        btnTarefas.setOnAction(e -> {
+            stage.close();
+            new TarefaView(usuario).start(new Stage());
+        });
 
         Button btnDiario = new Button("Meu Diário");
-        btnDiario.setOnAction(e -> new DiarioView(usuario).start(new Stage()));
+        btnDiario.setOnAction(e -> {
+            stage.close();
+            new DiarioView(usuario).start(new Stage());
+        });
 
         Button btnSair = new Button("Sair");
         btnSair.setOnAction(e -> {
@@ -34,7 +40,7 @@ public class MainView {
 
         Scene scene = new Scene(layout, 300, 250);
         stage.setScene(scene);
-        stage.setTitle("Tela Principal");
+        stage.setTitle("Tela Principal - " + usuario.getNome());
         stage.show();
     }
 }
