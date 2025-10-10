@@ -2,6 +2,7 @@ package service;
 
 import model.Tarefa;
 import model.Usuario;
+import model.Notificador;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,45 +11,31 @@ public class TarefaService {
     private Notificador notificador;
 
     public TarefaService() {
-
-        this.notificador = new NotificadorComTimestamp(new NotificadorBase());
+        this.notificador = new Notificador();
     }
 
-    public TarefaService(Notificador notificador) {
-        this.notificador = notificador;
-    }
-
-    public void adicionarTarefa(Tarefa tarefa){
+    public void adicionarTarefa(Tarefa tarefa) {
         tarefas.add(tarefa);
-
-        String mensagem = "Nova tarefa criada: '" + tarefa.getTitulo() +
-                "' com prazo até " + tarefa.getDataFim();
-        notificador.enviar(mensagem);
+        notificador.enviar("Nova tarefa criada: '" + tarefa.getTitulo() + "' com prazo até " + tarefa.getDataFim());
     }
 
-    public List<Tarefa> listarTarefas(){
+    public void marcarConcluida(Tarefa tarefa) {
+        tarefa.setConcluida(true);
+        notificador.enviar("Tarefa concluída: '" + tarefa.getTitulo() + "'");
+    }
+
+    public void removerTarefa(Tarefa tarefa) {
+        tarefas.remove(tarefa);
+        notificador.enviar("Tarefa removida: '" + tarefa.getTitulo() + "'");
+    }
+
+    public List<Tarefa> listarTarefas() {
         return new ArrayList<>(tarefas);
     }
 
-    public void marcarConcluida(Tarefa tarefa){
-        tarefa.setConcluida(true);
-
-        String mensagem = "Tarefa concluída: '" + tarefa.getTitulo() + "'";
-        notificador.enviar(mensagem);
-    }
-
-    public void removerTarefa(Tarefa tarefa){
-        tarefas.remove(tarefa);
-
-        String mensagem = "Tarefa removida: '" + tarefa.getTitulo() + "'";
-        notificador.enviar(mensagem);
-    }
-
-    public void limparTarefaUsuario(Usuario usuario){
+    public void limparTarefas() {
         int quantidade = tarefas.size();
         tarefas.clear();
-
-        String mensagem = "Todas as " + quantidade + " tarefas foram removidas";
-        notificador.enviar(mensagem);
+        notificador.enviar("Todas as " + quantidade + " tarefas foram removidas");
     }
 }

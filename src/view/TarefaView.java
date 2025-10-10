@@ -7,18 +7,16 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import model.Tarefa;
 import model.Usuario;
-import service.TarefaService;
-
+import controller.TarefaController;
 import java.time.LocalDate;
 
 public class TarefaView {
-
     private Usuario usuario;
-    private TarefaService tarefaService;
+    private TarefaController controller;
 
     public TarefaView(Usuario usuario) {
         this.usuario = usuario;
-        this.tarefaService = new TarefaService();
+        this.controller = new TarefaController(usuario);
     }
 
     public void start(Stage stage) {
@@ -36,8 +34,7 @@ public class TarefaView {
 
         Button btnAdicionar = new Button("Adicionar Tarefa");
         ListView<Tarefa> listView = new ListView<>();
-
-        listView.getItems().setAll(usuario.getTarefas());
+        listView.getItems().setAll(controller.listarTarefas());
 
         btnAdicionar.setOnAction(e -> {
             String titulo = txtTitulo.getText();
@@ -55,10 +52,9 @@ public class TarefaView {
                 return;
             }
 
-            Tarefa tarefa = new Tarefa(titulo, descricao, inicio, prazo);
-            tarefaService.adicionarTarefa(tarefa);
-            usuario.adicionarTarefa(tarefa);
-            listView.getItems().setAll(usuario.getTarefas());
+            // View chama Controller - notificação acontece no Service
+            controller.criarTarefa(titulo, descricao, inicio, prazo);
+            listView.getItems().setAll(controller.listarTarefas());
 
             txtTitulo.clear();
             txtDescricao.clear();
@@ -68,11 +64,10 @@ public class TarefaView {
         btnConcluir.setOnAction(e -> {
             Tarefa selecionada = listView.getSelectionModel().getSelectedItem();
             if (selecionada != null) {
-                selecionada.setConcluida(true);
-                tarefaService.marcarConcluida(selecionada); // Dispara notificação
+                controller.concluirTarefa(selecionada); // Notificação no Service
                 listView.refresh();
             } else {
-                showAlert("Aviso", "Selecione uma tarefa para marcar como concluída!");
+                showAlert("Aviso", "Selecione uma tarefa!");
             }
         });
 
@@ -80,29 +75,10 @@ public class TarefaView {
         btnRemover.setOnAction(e -> {
             Tarefa selecionada = listView.getSelectionModel().getSelectedItem();
             if (selecionada != null) {
-                tarefaService.removerTarefa(selecionada); // Dispara notificação
-                usuario.getTarefas().remove(selecionada);
-                listView.getItems().setAll(usuario.getTarefas());
+                controller.removerTarefa(selecionada); // Notificação no Service
+                listView.getItems().setAll(controller.listarTarefas());
             } else {
-                showAlert("Aviso", "Selecione uma tarefa para remover!");
-            }
-        });
-
-        Button btnLimparTudo = new Button("Limpar Todas");
-        btnLimparTudo.setOnAction(e -> {
-            if (!usuario.getTarefas().isEmpty()) {
-                Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
-                confirmacao.setTitle("Confirmação");
-                confirmacao.setHeaderText("Limpar todas as tarefas");
-                confirmacao.setContentText("Tem certeza que deseja remover TODAS as tarefas?");
-
-                if (confirmacao.showAndWait().get() == ButtonType.OK) {
-                    tarefaService.limparTarefaUsuario(usuario); // Dispara notificação
-                    usuario.getTarefas().clear();
-                    listView.getItems().setAll(usuario.getTarefas());
-                }
-            } else {
-                showAlert("Aviso", "Não há tarefas para limpar!");
+                showAlert("Aviso", "Selecione uma tarefa!");
             }
         });
 
@@ -112,26 +88,18 @@ public class TarefaView {
             new MainView(usuario).start(new Stage());
         });
 
-
-        VBox formLayout = new VBox(10,
+        VBox layout = new VBox(10,
                 lblTitulo, txtTitulo,
                 lblDescricao, txtDescricao,
                 new HBox(10, new VBox(lblDataInicio, dpInicio), new VBox(lblPrazo, dpPrazo)),
-                btnAdicionar
-        );
-        formLayout.setPadding(new Insets(10));
-
-        VBox listLayout = new VBox(10,
+                btnAdicionar,
                 new Label("Tarefas:"),
                 listView,
-                new HBox(10, btnConcluir, btnRemover, btnLimparTudo)
+                new HBox(10, btnConcluir, btnRemover, btnVoltar)
         );
-        listLayout.setPadding(new Insets(10));
+        layout.setPadding(new Insets(15));
 
-        VBox mainLayout = new VBox(10, formLayout, listLayout, btnVoltar);
-        mainLayout.setPadding(new Insets(15));
-
-        Scene scene = new Scene(mainLayout, 500, 650);
+        Scene scene = new Scene(layout, 500, 600);
         stage.setScene(scene);
         stage.setTitle("Gerenciador de Tarefas - " + usuario.getNome());
         stage.show();
