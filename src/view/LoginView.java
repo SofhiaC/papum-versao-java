@@ -7,10 +7,12 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import model.Usuario;
+import model.Sessao;
 import service.LoginService;
 
 public class LoginView extends Application{
-    private LoginService loginService = new LoginService();
+
+    private LoginService loginService = LoginService.getInstance();
 
     @Override
     public void start(Stage primaryStage){
@@ -32,8 +34,10 @@ public class LoginView extends Application{
 
             Usuario usuarioLogado = loginService.login(nome, senha);
             if (usuarioLogado != null){
+                // Armazena o usuário logado na Sessao
+                Sessao.getInstance().setUsuario(usuarioLogado);
                 mensagemLabel.setText("");
-                abrirMainView(usuarioLogado, primaryStage);
+                abrirMainView(primaryStage);
             } else {
                 mensagemLabel.setText("Login inválido! Tente novamente.");
             }
@@ -57,8 +61,8 @@ public class LoginView extends Application{
         primaryStage.show();
     }
 
-    private void abrirMainView(Usuario usuario, Stage primaryStage) {
-        primaryStage.close(); // fecha a tela de login
-        new MainView(usuario).start(new Stage()); // abre a tela principal
+    private void abrirMainView(Stage primaryStage) {
+        primaryStage.close();
+        new MainView().start(new Stage());
     }
 }

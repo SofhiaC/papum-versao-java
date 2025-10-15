@@ -8,14 +8,19 @@ import javafx.stage.Stage;
 
 import model.Diario;
 import model.Usuario;
+import model.Sessao;
 
 import java.time.LocalDate;
 
 public class DiarioView {
     private Usuario usuario;
 
-    public DiarioView(Usuario usuario){
-        this.usuario = usuario;
+    public DiarioView(){
+        // Obtém o usuário da Sessao
+        this.usuario = Sessao.getInstance().getUsuario();
+        if (this.usuario == null) {
+            throw new IllegalStateException("Nenhum usuário logado para a DiarioView.");
+        }
     }
 
     public void start(Stage stage){
@@ -57,7 +62,7 @@ public class DiarioView {
         Button btnVoltar = new Button("Voltar");
         btnVoltar.setOnAction(e -> {
             stage.close();
-            new MainView(usuario).start(new Stage());
+            new MainView().start(new Stage());
         });
 
         VBox layout = new VBox(10,

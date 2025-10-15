@@ -11,11 +11,22 @@ import java.util.List;
  */
 
 public class LoginService {
+
+    private static LoginService instance;
     private List<Usuario> usuarios;
 
-    public LoginService(){
+    //Construtor privado para evitar instâncias externas
+    private LoginService(){
         usuarios = new ArrayList<>();
         carregarUsuarios();
+    }
+
+    //Método para realizar a única instatncia
+    public static LoginService getInstance() {
+        if (instance == null) {
+            instance = new LoginService();
+        }
+        return instance;
     }
 
     private void carregarUsuarios(){

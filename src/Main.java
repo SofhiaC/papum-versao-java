@@ -3,6 +3,6 @@ import view.LoginView;
 
 public class Main {
     public static void main(String[] args) {
-        LoginView.launch(LoginView.class, args);
+        Application.launch(LoginView.class, args);
     }
 }
