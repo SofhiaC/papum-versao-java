@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import model.Tarefa;
+import model.Sessao;
 import model.Usuario;
 import controller.TarefaController;
 import java.time.LocalDate;
@@ -14,8 +15,12 @@ public class TarefaView {
     private Usuario usuario;
     private TarefaController controller;
 
-    public TarefaView(Usuario usuario) {
-        this.usuario = usuario;
+    public TarefaView() {
+        // Obtém o usuário da Sessao
+        this.usuario = Sessao.getInstance().getUsuario();
+        if (this.usuario == null) {
+            throw new IllegalStateException("Nenhum usuário logado para a TarefaView.");
+        }
         this.controller = new TarefaController(usuario);
     }
 
@@ -85,7 +90,7 @@ public class TarefaView {
         Button btnVoltar = new Button("Voltar");
         btnVoltar.setOnAction(e -> {
             stage.close();
-            new MainView(usuario).start(new Stage());
+            new MainView().start(new Stage());
         });
 
         VBox layout = new VBox(10,

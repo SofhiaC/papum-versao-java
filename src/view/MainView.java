@@ -7,30 +7,38 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import model.Usuario;
+import model.Sessao;
 
 public class MainView {
 
-    private Usuario usuario;
-
-    public MainView(Usuario usuario) {
-        this.usuario = usuario;
+    public MainView() {
     }
 
     public void start(Stage stage) {
+        // Obter o usuário da Sessao
+        Usuario usuario = Sessao.getInstance().getUsuario();
+
+        if (usuario == null) {
+            new LoginView().start(new Stage());
+            return;
+        }
+
         Button btnTarefas = new Button("Minhas Tarefas");
         btnTarefas.setOnAction(e -> {
             stage.close();
-            new TarefaView(usuario).start(new Stage());
+            new TarefaView().start(new Stage());
         });
 
         Button btnDiario = new Button("Meu Diário");
         btnDiario.setOnAction(e -> {
             stage.close();
-            new DiarioView(usuario).start(new Stage());
+            new DiarioView().start(new Stage());
         });
 
         Button btnSair = new Button("Sair");
         btnSair.setOnAction(e -> {
+            // Limpa o usuário da Sessao (Logout)
+            Sessao.getInstance().logout();
             stage.close();
             new LoginView().start(new Stage());
         });
