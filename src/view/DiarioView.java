@@ -7,20 +7,23 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import model.Diario;
-import model.Usuario;
+import model.ListagemDiario;
 import model.Sessao;
+import model.Usuario;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class DiarioView {
     private Usuario usuario;
+    private ListagemDiario listagem;
 
     public DiarioView(){
-        // Obtém o usuário da Sessao
         this.usuario = Sessao.getInstance().getUsuario();
         if (this.usuario == null) {
             throw new IllegalStateException("Nenhum usuário logado para a DiarioView.");
         }
+        this.listagem = new ListagemDiario(usuario);
     }
 
     public void start(Stage stage){
@@ -33,7 +36,7 @@ public class DiarioView {
 
         Button btnSalvar = new Button("Salvar");
         ListView<Diario> listView = new ListView<>();
-        listView.getItems().setAll(usuario.getDiarios());
+        atualizarLista(listView);
 
         btnSalvar.setOnAction(e -> {
             LocalDate data = dpData.getValue();
@@ -46,7 +49,7 @@ public class DiarioView {
 
             Diario diario = new Diario(data, conteudo);
             usuario.adicionarDiario(diario);
-            listView.getItems().setAll(usuario.getDiarios());
+            atualizarLista(listView);
             txtConteudo.clear();
         });
 
@@ -55,7 +58,7 @@ public class DiarioView {
             Diario selecionado = listView.getSelectionModel().getSelectedItem();
             if (selecionado != null) {
                 usuario.getDiarios().remove(selecionado);
-                listView.getItems().setAll(usuario.getDiarios());
+                atualizarLista(listView);
             }
         });
 
@@ -79,6 +82,11 @@ public class DiarioView {
         stage.setScene(scene);
         stage.setTitle("Diário - " + usuario.getNome());
         stage.show();
+    }
+
+    private void atualizarLista(ListView<Diario> listView){
+        List<Diario> diarios = listagem.listar();
+        listView.getItems().setAll(diarios);
     }
 
     private void showAlert(String titulo, String msg){
