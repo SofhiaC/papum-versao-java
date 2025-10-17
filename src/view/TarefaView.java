@@ -62,8 +62,12 @@ public class TarefaView {
                 return;
             }
 
-            // Cria a tarefa usando o Service
-            service.adicionarTarefa(new Tarefa(titulo, descricao, inicio, prazo));
+            Tarefa tarefa = new Tarefa(titulo, descricao, inicio, prazo);
+
+            usuario.adicionarTarefa(tarefa);
+
+            service.adicionarTarefa(tarefa);
+
             atualizarLista(listView);
 
             txtTitulo.clear();
@@ -74,6 +78,8 @@ public class TarefaView {
         btnConcluir.setOnAction(e -> {
             Tarefa selecionada = listView.getSelectionModel().getSelectedItem();
             if (selecionada != null) {
+                // CORREÇÃO: Marcar como concluída no USUÁRIO também
+                selecionada.setConcluida(true);
                 service.marcarConcluida(selecionada);
                 atualizarLista(listView);
             } else {
@@ -85,6 +91,8 @@ public class TarefaView {
         btnRemover.setOnAction(e -> {
             Tarefa selecionada = listView.getSelectionModel().getSelectedItem();
             if (selecionada != null) {
+                // CORREÇÃO: Remover do USUÁRIO também
+                usuario.getTarefas().remove(selecionada);
                 service.removerTarefa(selecionada);
                 atualizarLista(listView);
             } else {
@@ -116,8 +124,12 @@ public class TarefaView {
     }
 
     private void atualizarLista(ListView<Tarefa> listView){
-        // Usa o Template Method para listar tarefas
-        listView.getItems().setAll(listagem.listar());
+        // CORREÇÃO: Buscar as tarefas do USUÁRIO em vez do service
+        listView.getItems().setAll(usuario.getTarefas());
+
+        // Se quiser manter o Template Method, pode usar:
+        // listView.getItems().setAll(listagem.listar());
+        // Mas precisa ajustar o ListagemTarefa para usar usuario.getTarefas()
     }
 
     private void showAlert(String titulo, String msg) {
