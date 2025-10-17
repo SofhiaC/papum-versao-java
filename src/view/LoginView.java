@@ -7,12 +7,11 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import model.Usuario;
-import model.Sessao;
-import service.LoginService;
+import controller.UsuarioController;  // Mudou para Controller
 
 public class LoginView extends Application{
 
-    private LoginService loginService = LoginService.getInstance();
+    private UsuarioController usuarioController = new UsuarioController();  // Mudou para Controller
 
     @Override
     public void start(Stage primaryStage){
@@ -32,10 +31,9 @@ public class LoginView extends Application{
             String nome = nomeTextField.getText();
             String senha = senhaField.getText();
 
-            Usuario usuarioLogado = loginService.login(nome, senha);
+            // Mudou para usar o Controller
+            Usuario usuarioLogado = usuarioController.login(nome, senha);
             if (usuarioLogado != null){
-                // Armazena o usuário logado na Sessao
-                Sessao.getInstance().setUsuario(usuarioLogado);
                 mensagemLabel.setText("");
                 abrirMainView(primaryStage);
             } else {
