@@ -5,15 +5,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+
 import model.Tarefa;
+import model.ListagemTarefa;
+import service.TarefaService;
 import model.Sessao;
 import model.Usuario;
-import controller.TarefaController;
+
 import java.time.LocalDate;
 
 public class TarefaView {
     private Usuario usuario;
-    private TarefaController controller;
+    private TarefaService service;
+    private ListagemTarefa listagem;
 
     public TarefaView() {
         // Obtém o usuário da Sessao
@@ -21,7 +25,8 @@ public class TarefaView {
         if (this.usuario == null) {
             throw new IllegalStateException("Nenhum usuário logado para a TarefaView.");
         }
-        this.controller = new TarefaController(usuario);
+        this.service = new TarefaService();
+        this.listagem = new ListagemTarefa(service);
     }
 
     public void start(Stage stage) {
@@ -39,7 +44,7 @@ public class TarefaView {
 
         Button btnAdicionar = new Button("Adicionar Tarefa");
         ListView<Tarefa> listView = new ListView<>();
-        listView.getItems().setAll(controller.listarTarefas());
+        atualizarLista(listView);
 
         btnAdicionar.setOnAction(e -> {
             String titulo = txtTitulo.getText();
@@ -57,9 +62,9 @@ public class TarefaView {
                 return;
             }
 
-            // View chama Controller - notificação acontece no Service
-            controller.criarTarefa(titulo, descricao, inicio, prazo);
-            listView.getItems().setAll(controller.listarTarefas());
+            // Cria a tarefa usando o Service
+            service.adicionarTarefa(new Tarefa(titulo, descricao, inicio, prazo));
+            atualizarLista(listView);
 
             txtTitulo.clear();
             txtDescricao.clear();
@@ -69,8 +74,8 @@ public class TarefaView {
         btnConcluir.setOnAction(e -> {
             Tarefa selecionada = listView.getSelectionModel().getSelectedItem();
             if (selecionada != null) {
-                controller.concluirTarefa(selecionada); // Notificação no Service
-                listView.refresh();
+                service.marcarConcluida(selecionada);
+                atualizarLista(listView);
             } else {
                 showAlert("Aviso", "Selecione uma tarefa!");
             }
@@ -80,8 +85,8 @@ public class TarefaView {
         btnRemover.setOnAction(e -> {
             Tarefa selecionada = listView.getSelectionModel().getSelectedItem();
             if (selecionada != null) {
-                controller.removerTarefa(selecionada); // Notificação no Service
-                listView.getItems().setAll(controller.listarTarefas());
+                service.removerTarefa(selecionada);
+                atualizarLista(listView);
             } else {
                 showAlert("Aviso", "Selecione uma tarefa!");
             }
@@ -108,6 +113,11 @@ public class TarefaView {
         stage.setScene(scene);
         stage.setTitle("Gerenciador de Tarefas - " + usuario.getNome());
         stage.show();
+    }
+
+    private void atualizarLista(ListView<Tarefa> listView){
+        // Usa o Template Method para listar tarefas
+        listView.getItems().setAll(listagem.listar());
     }
 
     private void showAlert(String titulo, String msg) {
