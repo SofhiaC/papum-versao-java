@@ -34,7 +34,7 @@ public class Tarefa {
         return dataFim;
     }
 
-    public boolean isConluida(){
+    public boolean isConcluida(){
         return concluida;
     }
 

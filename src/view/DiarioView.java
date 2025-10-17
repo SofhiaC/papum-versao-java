@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 
 import model.Diario;
 import model.ListagemDiario;
+import controller.DiarioController;  // Import do Controller
 import model.Sessao;
 import model.Usuario;
 
@@ -16,6 +17,7 @@ import java.util.List;
 
 public class DiarioView {
     private Usuario usuario;
+    private DiarioController controller;  // Usando o Controller
     private ListagemDiario listagem;
 
     public DiarioView(){
@@ -23,6 +25,7 @@ public class DiarioView {
         if (this.usuario == null) {
             throw new IllegalStateException("Nenhum usuário logado para a DiarioView.");
         }
+        this.controller = new DiarioController(usuario);  // Instancia o Controller
         this.listagem = new ListagemDiario(usuario);
     }
 
@@ -33,6 +36,7 @@ public class DiarioView {
         Label lblConteudo = new Label("Como foi seu dia?");
         TextArea txtConteudo = new TextArea();
         txtConteudo.setPromptText("Escreva aqui seu registro diário...");
+        txtConteudo.setWrapText(true);  // Melhora a visualização do texto
 
         Button btnSalvar = new Button("Salvar");
         ListView<Diario> listView = new ListView<>();
@@ -47,18 +51,30 @@ public class DiarioView {
                 return;
             }
 
-            Diario diario = new Diario(data, conteudo);
-            usuario.adicionarDiario(diario);
-            atualizarLista(listView);
-            txtConteudo.clear();
+            // Usa o Controller para criar o registro
+            boolean sucesso = controller.criarRegistroDiario(data, conteudo);
+
+            if (sucesso) {
+                atualizarLista(listView);
+                txtConteudo.clear();
+                showAlert("Sucesso", "Registro salvo com sucesso!");
+            } else {
+                showAlert("Erro", "Erro ao salvar o registro!");
+            }
         });
 
         Button btnRemover = new Button("Remover Selecionado");
         btnRemover.setOnAction(e -> {
             Diario selecionado = listView.getSelectionModel().getSelectedItem();
             if (selecionado != null) {
-                usuario.getDiarios().remove(selecionado);
-                atualizarLista(listView);
+                // Usa o Controller para remover
+                boolean removido = controller.removerRegistroDiario(selecionado);
+                if (removido) {
+                    atualizarLista(listView);
+                    showAlert("Sucesso", "Registro removido com sucesso!");
+                }
+            } else {
+                showAlert("Aviso", "Selecione um registro para remover!");
             }
         });
 
@@ -68,24 +84,52 @@ public class DiarioView {
             new MainView().start(new Stage());
         });
 
-        VBox layout = new VBox(10,
+        // Botão para editar registro (opcional)
+        Button btnEditar = new Button("Editar Selecionado");
+        btnEditar.setOnAction(e -> {
+            Diario selecionado = listView.getSelectionModel().getSelectedItem();
+            if (selecionado != null) {
+                // Preenche os campos com os dados do registro selecionado
+                dpData.setValue(selecionado.getData());
+                txtConteudo.setText(selecionado.getConteudo());
+
+                // Remove o registro antigo
+                controller.removerRegistroDiario(selecionado);
+                atualizarLista(listView);
+            } else {
+                showAlert("Aviso", "Selecione um registro para editar!");
+            }
+        });
+
+        // Layout melhor organizado
+        VBox formLayout = new VBox(10,
                 lblData, dpData,
                 lblConteudo, txtConteudo,
-                btnSalvar,
-                new Label("Registros de Diário:"),
-                listView,
-                new HBox(10, btnRemover, btnVoltar)
+                btnSalvar
         );
-        layout.setPadding(new Insets(15));
+        formLayout.setPadding(new Insets(10));
 
-        Scene scene = new Scene(layout, 450, 500);
+        VBox listLayout = new VBox(10,
+                new Label("Registros de Diário:"),
+                listView
+        );
+        listLayout.setPadding(new Insets(10));
+
+        HBox buttonLayout = new HBox(10, btnEditar, btnRemover, btnVoltar);
+        buttonLayout.setPadding(new Insets(10));
+
+        VBox mainLayout = new VBox(10, formLayout, listLayout, buttonLayout);
+        mainLayout.setPadding(new Insets(15));
+
+        Scene scene = new Scene(mainLayout, 500, 600);  // Aumentei um pouco o tamanho
         stage.setScene(scene);
         stage.setTitle("Diário - " + usuario.getNome());
         stage.show();
     }
 
     private void atualizarLista(ListView<Diario> listView){
-        List<Diario> diarios = listagem.listar();
+        // Usa o Controller para obter a lista
+        List<Diario> diarios = controller.listarRegistrosDiario();
         listView.getItems().setAll(diarios);
     }
 
