@@ -2,9 +2,8 @@ package model;
 
 import service.TarefaService;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class ListagemTarefa {
+public abstract class ListagemTarefa {
     protected TarefaService service;
 
     public ListagemTarefa(TarefaService service) {
@@ -12,12 +11,10 @@ public class ListagemTarefa {
     }
 
     // Template Method
-    public List<Tarefa> listar() {
+    public final List<Tarefa> listar() {
         return processarLista(service.listarTarefas());
     }
 
-    // Hook method para subclasses modificarem o comportamento
-    protected List<Tarefa> processarLista(List<Tarefa> tarefas) {
-        return tarefas;
-    }
+    // Hook method — as subclasses decidem o filtro
+    protected abstract List<Tarefa> processarLista(List<Tarefa> tarefas);
 }

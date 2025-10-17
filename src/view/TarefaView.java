@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 
 import model.Tarefa;
 import model.ListagemTarefa;
+import model.ListagemTarefasPendentes;
 import service.TarefaService;
 import model.Sessao;
 import model.Usuario;
@@ -26,7 +27,7 @@ public class TarefaView {
             throw new IllegalStateException("Nenhum usuário logado para a TarefaView.");
         }
         this.service = new TarefaService();
-        this.listagem = new ListagemTarefa(service);
+        this.listagem = new ListagemTarefasPendentes(service);
     }
 
     public void start(Stage stage) {
@@ -62,8 +63,12 @@ public class TarefaView {
                 return;
             }
 
-            // Cria a tarefa usando o Service
-            service.adicionarTarefa(new Tarefa(titulo, descricao, inicio, prazo));
+            Tarefa tarefa = new Tarefa(titulo, descricao, inicio, prazo);
+
+            usuario.adicionarTarefa(tarefa);
+
+            service.adicionarTarefa(tarefa);
+
             atualizarLista(listView);
 
             txtTitulo.clear();
@@ -74,6 +79,7 @@ public class TarefaView {
         btnConcluir.setOnAction(e -> {
             Tarefa selecionada = listView.getSelectionModel().getSelectedItem();
             if (selecionada != null) {
+                selecionada.setConcluida(true);
                 service.marcarConcluida(selecionada);
                 atualizarLista(listView);
             } else {
@@ -85,6 +91,7 @@ public class TarefaView {
         btnRemover.setOnAction(e -> {
             Tarefa selecionada = listView.getSelectionModel().getSelectedItem();
             if (selecionada != null) {
+                usuario.getTarefas().remove(selecionada);
                 service.removerTarefa(selecionada);
                 atualizarLista(listView);
             } else {
@@ -115,8 +122,7 @@ public class TarefaView {
         stage.show();
     }
 
-    private void atualizarLista(ListView<Tarefa> listView){
-        // Usa o Template Method para listar tarefas
+    private void atualizarLista(ListView<Tarefa> listView) {
         listView.getItems().setAll(listagem.listar());
     }
 
