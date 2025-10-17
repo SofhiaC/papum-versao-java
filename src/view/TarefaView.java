@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 
 import model.Tarefa;
 import model.ListagemTarefa;
+import model.ListagemTarefasPendentes;
 import service.TarefaService;
 import model.Sessao;
 import model.Usuario;
@@ -26,7 +27,7 @@ public class TarefaView {
             throw new IllegalStateException("Nenhum usuário logado para a TarefaView.");
         }
         this.service = new TarefaService();
-        this.listagem = new ListagemTarefa(service);
+        this.listagem = new ListagemTarefasPendentes(service);
     }
 
     public void start(Stage stage) {
@@ -78,7 +79,6 @@ public class TarefaView {
         btnConcluir.setOnAction(e -> {
             Tarefa selecionada = listView.getSelectionModel().getSelectedItem();
             if (selecionada != null) {
-                // CORREÇÃO: Marcar como concluída no USUÁRIO também
                 selecionada.setConcluida(true);
                 service.marcarConcluida(selecionada);
                 atualizarLista(listView);
@@ -91,7 +91,6 @@ public class TarefaView {
         btnRemover.setOnAction(e -> {
             Tarefa selecionada = listView.getSelectionModel().getSelectedItem();
             if (selecionada != null) {
-                // CORREÇÃO: Remover do USUÁRIO também
                 usuario.getTarefas().remove(selecionada);
                 service.removerTarefa(selecionada);
                 atualizarLista(listView);
@@ -123,13 +122,8 @@ public class TarefaView {
         stage.show();
     }
 
-    private void atualizarLista(ListView<Tarefa> listView){
-        // CORREÇÃO: Buscar as tarefas do USUÁRIO em vez do service
-        listView.getItems().setAll(usuario.getTarefas());
-
-        // Se quiser manter o Template Method, pode usar:
-        // listView.getItems().setAll(listagem.listar());
-        // Mas precisa ajustar o ListagemTarefa para usar usuario.getTarefas()
+    private void atualizarLista(ListView<Tarefa> listView) {
+        listView.getItems().setAll(listagem.listar());
     }
 
     private void showAlert(String titulo, String msg) {
